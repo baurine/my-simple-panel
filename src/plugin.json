@@ -1,12 +1,12 @@
 {
   "type": "panel",
-  "name": "Simple Angular",
-  "id": "simple-angular-panel",
+  "name": "My Panel",
+  "id": "my-simple-panel",
 
   "info": {
-    "description": "Simple Angular Panel",
+    "description": "My Custom Simple Panel",
     "author": {
-      "name": "Grafana Labs"
+      "name": "baurine"
     },
     "keywords": [ "discrete", "events", "strings" ],
     "logos": {

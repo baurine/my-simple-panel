@@ -25,4 +25,16 @@
       </div>
     </div>
   </div>
+  <div class="section gf-form-group">
+    <h5 class="section-heading">Axes</h5>
+    <div class="gf-form">
+      <label class="gf-form-label width-8">Unit</label>
+      <div
+        class="gf-form-dropdown-typeahead width-10"
+        ng-model="ctrl.panel.curUnitFormat"
+        dropdown-typeahead="ctrl.unitFormats"
+        dropdown-typeahead-on-select="ctrl.setUnitFormat($subItem)"
+      ></div>
+    </div>
+  </div>
 </div>

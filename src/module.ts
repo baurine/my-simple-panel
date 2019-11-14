@@ -2,11 +2,14 @@ import { MetricsPanelCtrl } from 'grafana/app/plugins/sdk';
 import defaultsDeep from 'lodash/defaultsDeep';
 // @ts-ignore
 import TimeSeries from 'grafana/app/core/time_series';
+
 // 新的实现
 // grafana 主仓库里这两个方法是在 @grafana/data 里，估计 6.4 以后要从 '@grafana/data' 中导入
 import { getValueFormats, getValueFormat } from '@grafana/ui';
 // 老的实现
 import kbn from 'grafana/app/core/utils/kbn';
+
+import * as d3 from './lib/d3.v5.min.js';
 
 export default class SimpleCtrl extends MetricsPanelCtrl {
   static templateUrl = 'partials/module.html';
@@ -135,6 +138,107 @@ export default class SimpleCtrl extends MetricsPanelCtrl {
       return formatFunc(value, decimalInfo.decimals, decimalInfo.scaledDecimals);
     }
     return value;
+  }
+
+  drawLines(data) {
+    var container = d3.select('#panel_svg_container');
+    var clientRect = container.node().getBoundingClientRect();
+    console.log(clientRect);
+
+    var width = clientRect.width;
+    var height = clientRect.height;
+    var padding = { top: 20, right: 20, bottom: 20, left: 50 };
+
+    const colors = ['green', 'red', 'blue', 'pink'];
+
+    container.select('svg').remove();
+    var svg = container
+      .append('svg')
+      .attr('width', width + 'px')
+      .attr('height', height + 'px');
+
+    var timeRange = [data[0].flotpairs[0][0], data[0].flotpairs[data[0].stats.count - 1][0]];
+    var xScale = d3
+      .scaleLinear()
+      .domain(timeRange)
+      .range([0, width - padding.left - padding.right]);
+    var max = d3.max(data.map(item => item.stats.max));
+    var min = d3.min(data.map(item => item.stats.min));
+    var yScale = d3
+      .scaleLinear()
+      .domain([min * 0.8, max * 1.1])
+      .range([height - padding.top - padding.bottom, 0]);
+
+    var timeFormat = d3.timeFormat('%H:%M:%S');
+    var xAxis = d3
+      .axisBottom()
+      .scale(xScale)
+      .ticks(width / 100) // https://github.com/grafana/grafana/blob/master/public/app/plugins/panel/graph/graph.ts#L599
+      .tickFormat(d => timeFormat(d));
+    var yAxis = d3
+      .axisLeft()
+      .scale(yScale)
+      .ticks(height / 50)
+      .tickFormat(d => this.formatValue(d));
+    svg
+      .append('g')
+      .attr('class', 'axis')
+      .attr('transform', `translate(${padding.left}, ${height - padding.bottom})`)
+      .call(xAxis);
+    svg
+      .append('g')
+      .attr('class', 'axis')
+      .attr('transform', `translate(${padding.left},${padding.top})`)
+      .call(yAxis);
+
+    var linePathGenerator = d3
+      .line()
+      .x(d => xScale(d[0]))
+      .y(d => yScale(d[1]))
+      .curve(d3.curveCardinal);
+
+    data.forEach((item, i) => {
+      // line
+      svg
+        .append('g')
+        .append('path')
+        .attr('class', 'line-path')
+        .attr('transform', `translate(${padding.left}, ${padding.top})`)
+        .attr('d', linePathGenerator(item.flotpairs))
+        .attr('fill', 'none')
+        .attr('stroke', colors[i] || 'orange')
+        .attr('stroke-width', this.panel.lineWidth);
+      // dot
+      if (this.panel.showPoints) {
+        svg
+          .append('g')
+          .selectAll('circle')
+          .data(item.flotpairs)
+          .enter()
+          .append('circle')
+          .attr('transform', `translate(${padding.left}, ${padding.top})`)
+          .attr('cx', linePathGenerator.x())
+          .attr('cy', linePathGenerator.y())
+          .attr('r', this.panel.pointRadius)
+          .attr('fill', colors[i] || 'orange');
+      }
+    });
+  }
+
+  // ctrl 表示 MyPanelCtrl 实例
+  link(scope: any, elem: any, attrs: any, ctrl: any) {
+    console.log('link');
+
+    ctrl.events.on('render', function() {
+      console.log('link render handler');
+
+      if (ctrl.data.length > 0) {
+        ctrl.drawLines(ctrl.data);
+      }
+
+      // 没什么实际用处，只用于 grafana 统计该 panel 绘制了多少次
+      ctrl.renderingCompleted();
+    });
   }
 }
 

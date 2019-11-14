@@ -1,5 +1,7 @@
 import { MetricsPanelCtrl } from 'grafana/app/plugins/sdk';
 import defaultsDeep from 'lodash/defaultsDeep';
+// @ts-ignore
+import TimeSeries from 'grafana/app/core/time_series';
 
 export default class SimpleCtrl extends MetricsPanelCtrl {
   static templateUrl = 'partials/module.html';
@@ -7,6 +9,8 @@ export default class SimpleCtrl extends MetricsPanelCtrl {
   panelDefaults = {
     text: 'Hello World',
   };
+
+  data: any[] = [];
 
   /** @ngInject */
   constructor($scope, $injector) {
@@ -21,6 +25,19 @@ export default class SimpleCtrl extends MetricsPanelCtrl {
 
   onDataReceived(dataList: any) {
     console.log('onDataReceived:', dataList);
+    this.data = dataList.map(this.seriesHandler.bind(this));
+    console.log('onDataReceived series:', this.data);
+
+    this.render();
+  }
+
+  seriesHandler(seriesData: any) {
+    const series = new TimeSeries({
+      datapoints: seriesData.datapoints,
+      alias: seriesData.target,
+    });
+    series.flotpairs = series.getFlotPairs('connected');
+    return series;
   }
 
   // onInitEditMode() {

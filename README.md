@@ -1,7 +1,14 @@
-## Simple Angular Panel
-[![CircleCI](https://circleci.com/gh/grafana/simple-angular-panel.svg?style=svg)](https://circleci.com/gh/grafana/simple-angular-panel)
+## My Simple Panel
 
-Hello world showing series in grafana panel
+A simple panel plugin to demo how to make a grafana panel plugin.
+
+- [Step by step tutorial](./notes/how-make-a-grafana-panel-plugin.md)
+
+Final effect:
+
+![](./notes/assets/grafana-my-panel-final.png)
+
+[Demo Video](https://youtu.be/kJsZy8M5eNU)
 
 ### Building this plugin
 
@@ -14,16 +21,19 @@ yarn
 ```
 
 Build plugin in production mode
+
 ```BASH
 yarn build
 ```
 
 Build plugin in development mode
+
 ```BASH
 yarn dev
 ```
 
 Build plugin in development mode, watching for changes.
+
 ```BASH
-yarn dev --watch
+yarn run watch
 ```

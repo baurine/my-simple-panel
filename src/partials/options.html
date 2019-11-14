@@ -1,15 +1,40 @@
 <div class="editor-row">
   <div class="section gf-form-group">
-    <h5 class="section-heading">Display</h5>
+    <h5 class="section-heading">Draw Options</h5>
     <div class="gf-form">
-      <label class="gf-form-label width-6">Text</label>
-      <input
-        type="text"
-        ng-model="ctrl.panel.text"
-        class="gf-form-input"
-        ng-blur="ctrl.render()"
-        min="1"
-      />
+      <label class="gf-form-label width-9">Line Width</label>
+      <div class="gf-form-select-wrapper max-width-9">
+        <select
+          class="gf-form-input"
+          ng-model="ctrl.panel.lineWidth"
+          ng-options="f for f in [0,1,2,3,4,5,6,7,8,9,10]"
+          ng-change="ctrl.render()"
+        ></select>
+      </div>
+    </div>
+    <gf-form-switch class="gf-form" label="Points" label-class="width-9" checked="ctrl.panel.showPoints" on-change="ctrl.render()"></gf-form-switch>
+    <div class="gf-form" ng-if="ctrl.panel.showPoints">
+      <label class="gf-form-label width-9">Point Radius</label>
+      <div class="gf-form-select-wrapper max-width-9">
+        <select
+          class="gf-form-input"
+          ng-model="ctrl.panel.pointRadius"
+          ng-options="f for f in [1,2,3,4,5,6,7,8,9,10]"
+          ng-change="ctrl.render()"
+        ></select>
+      </div>
+    </div>
+  </div>
+  <div class="section gf-form-group">
+    <h5 class="section-heading">Axes</h5>
+    <div class="gf-form">
+      <label class="gf-form-label width-8">Unit</label>
+      <div
+        class="gf-form-dropdown-typeahead width-10"
+        ng-model="ctrl.panel.curUnitFormat"
+        dropdown-typeahead="ctrl.unitFormats"
+        dropdown-typeahead-on-select="ctrl.setUnitFormat($subItem)"
+      ></div>
     </div>
   </div>
 </div>

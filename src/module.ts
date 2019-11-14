@@ -7,7 +7,9 @@ export default class SimpleCtrl extends MetricsPanelCtrl {
   static templateUrl = 'partials/module.html';
 
   panelDefaults = {
-    text: 'Hello World',
+    lineWidth: 2,
+    showPoints: true,
+    pointRadius: 4,
   };
 
   data: any[] = [];
@@ -18,7 +20,7 @@ export default class SimpleCtrl extends MetricsPanelCtrl {
     defaultsDeep(this.panel, this.panelDefaults);
 
     this.events.on('data-received', this.onDataReceived.bind(this));
-    // this.events.on('init-edit-mode', this.onInitEditMode.bind(this));
+    this.events.on('init-edit-mode', this.onInitEditMode.bind(this));
     // this.events.on('render', this.onRender.bind(this));
     // this.events.on('data-error', this.onDataError.bind(this));
   }
@@ -40,9 +42,10 @@ export default class SimpleCtrl extends MetricsPanelCtrl {
     return series;
   }
 
-  // onInitEditMode() {
-  //   this.addEditorTab('Options', `public/plugins/${this.pluginId}/partials/options.html`, 2);
-  // }
+  onInitEditMode() {
+    console.log('onInitEditMode');
+    this.addEditorTab('Options', `public/plugins/${this.pluginId}/partials/options.html`, 2);
+  }
 
   // onRender() {
   //   // Tells the screen capture system that you finished
